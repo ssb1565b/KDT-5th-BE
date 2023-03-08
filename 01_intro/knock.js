@@ -1,7 +1,7 @@
 function knockDoor(count, name, callback) {
   console.log('노크를 하고 기다립니다! ');
   setTimeout(() => {
-    callName(count, name);
+    callback(count, name);
   }, 1000 * count);
 }
 
