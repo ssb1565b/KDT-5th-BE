@@ -17,14 +17,15 @@ const mainRouter = require('./routes');
 const userRouter = require('./routes/users');
 // './routes/users.js'인데 .js 생략 가능
 const postsRouter = require('./routes/posts');
+const dbRouter = require('./routes/db');
 
 // 서버 세팅단계
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.use(bodyParser.json());
+app.use(express.json());
 // json형태로 데이터를 전달한다는 의미
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 // urlencoded은 url 처럼 데이터를 변환하면localhost:4000/posts?title=title&content=content 해당 데이터를 json 형태 { “title”: “title, “content”: “content” } 라고 전달 합니다.
 // extended: false 를 기본으로 기억하기
 // bodyParser 세팅 부분은 하단의 app.use('/users', userRouter); 이거보다 위에 있어야함
@@ -42,10 +43,7 @@ app.use('/posts', postsRouter);
 // // localhost:4000/users
 // 미들웨어를 끼워놓고자 use를 씀
 // 앞으로 앞에 users라는게 붙으면 app이 처리하는게 아니라 userRouter에서 처리하게됨
-
-app.get('/', (req, res) => {
-  res.send('Hello, Express world');
-});
+app.use('/db', dbRouter);
 
 app.use((err, req, res, next) => {
   // err 를 받는 미들웨어를 작성할때는 반드시 매개변수 4개 작성
