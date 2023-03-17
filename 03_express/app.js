@@ -5,6 +5,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
 // express 설정 단계
 const app = express();
@@ -21,6 +22,8 @@ const postsRouter = require('./routes/posts');
 const dbRouter = require('./routes/db');
 const dbBoardRouter = require('./routes/dbBoard');
 const cookieRouter = require('./routes/cookie');
+const registerRouter = require('./routes/register');
+const loginRouter = require('./routes/login');
 
 // 서버 세팅단계
 app.set('view engine', 'ejs');
@@ -33,6 +36,16 @@ app.use(express.urlencoded({ extended: false }));
 // extended: false 를 기본으로 기억하기
 // bodyParser 세팅 부분은 하단의 app.use('/users', userRouter); 이거보다 위에 있어야함
 app.use(cookieParser());
+app.use(
+  session({
+    secret: 'subin',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      maxAge: 1000 * 60 * 60,
+    },
+  }),
+);
 
 console.log(__dirname); // 현재 파일 위치를 볼 수 있음
 // app.use('/css', express.static(__dirname + '/views/css'));
@@ -49,7 +62,8 @@ app.use('/posts', postsRouter);
 app.use('/db', dbRouter);
 app.use('/dbBoard', dbBoardRouter);
 app.use('/cookie', cookieRouter);
-
+app.use('/register', registerRouter);
+app.use('/login', loginRouter);
 app.use((err, req, res, next) => {
   // err 를 받는 미들웨어를 작성할때는 반드시 매개변수 4개 작성
   console.log(err.stack);

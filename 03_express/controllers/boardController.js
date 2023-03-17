@@ -5,7 +5,7 @@ const boardDB = {
   getAllArticles: (cb) => {
     connection.query('SELECT * FROM mydb1.board;', (err, data) => {
       if (err) throw err;
-      console.log(data);
+      // console.log(data);
       cb(data);
     });
   },
@@ -13,7 +13,7 @@ const boardDB = {
   // 게시물 작성하기
   createArticles: (values, cb) => {
     connection.query(
-      `INSERT INTO mydb1.board (TITLE, CONTENT) VALUES ('${values.title}', '${values.content}');`,
+      `INSERT INTO mydb1.board (TITLE, CONTENT, USERID) VALUES ('${values.title}', '${values.content}','${values.userId}');`,
       (err, data) => {
         if (err) throw err;
         cb(data);
@@ -27,7 +27,7 @@ const boardDB = {
       `SELECT * FROM mydb1.board WHERE ID_PK = ${id};`,
       (err, data) => {
         if (err) throw err;
-        console.log(data);
+        // console.log(data);
         cb(data);
       },
     );
@@ -39,7 +39,6 @@ const boardDB = {
       `UPDATE mydb1.board SET TITLE = '${modifyArticle.title}',CONTENT = '${modifyArticle.content}' WHERE ID_PK = ${id};`,
       (err, data) => {
         if (err) throw err;
-        console.log(data);
         cb(data);
       },
     );
