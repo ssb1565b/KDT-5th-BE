@@ -133,6 +133,9 @@
             <div class="author">
               작성자 : <%= ARTICLE[i].USERID %>
             </div>
+            <div class="author">
+              날짜 : <%= ARTICLE[i]?.REGISTER_DATE?.toISOString()?.substring(0, 16)?.replace('T',' '); %>
+            </div>
             <div class="title">
               <%= ARTICLE[i].TITLE %>
             </div>
@@ -141,8 +144,8 @@
             </div>
             <div class="foot">
               <% if (ARTICLE[i].USERID === userId) { %>
-              <a class="btn orange" href="dbBoard/modify/<%= ARTICLE[i].ID_PK %>">수정</a>
-              <a class="btn blue" href="/dbBoard" onclick="deleteArticle('<%= ARTICLE[i].ID_PK %>')">삭제</a>
+              <a class="btn orange" href="/dbBoard/modify/<%= ARTICLE[i]._id %>">수정</a>
+              <a class="btn blue" href="/dbBoard" onclick="deleteArticle('<%= ARTICLE[i]._id %>')">삭제</a>
               <% } %>
             </div>
           </li>
@@ -158,20 +161,18 @@
 </body>
 <script>
   async function deleteArticle(id) {
-    const res = await fetch(`http://localhost:4000/dbBoard/delete/${id}`, {
+    const res = await fetch(`/dbBoard/delete/${id}`, {
       method: 'DELETE',
-      headers: {
-        'Content-type': 'application/json',
-      }
+
     })
 
-    if (res.status === 200) {
-      // location.reload()
-      return
-    }
+    if (res.status !== 200) return alert('통신 실패');
+    const msg = await res.json();
+    console.log(msg);
+    // location.reload()
   }
 
-  // 1. fetch, then 방식
+  // // 1. fetch, then 방식
   // const deleteArticle = (id) => {
   //   fetch(`http://localhost:4000/dbBoard/delete/${id}`, {
   //     method: 'DELETE',
@@ -179,7 +180,11 @@
   //       'Content-type': 'application/json',
   //     }
   //   }).then((res) => {
+  //     console.log(res);
+  //     return res.json()
   //     location.href = '/dbBoard'
+  //   }).then((msg) => {
+  //     console.log(msg);
   //   })
   // }
 </script>

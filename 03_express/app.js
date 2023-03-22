@@ -6,12 +6,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+require('dotenv').config();
 
 // express 설정 단계
 const app = express();
 
 // 포트 세팅 단계
-const PORT = 4000;
+const { PORT } = process.env;
+// === const PORT = process.env.PORT;
 //  http://localhost:4000 === http://127/0/0/1:4000
 
 const mainRouter = require('./routes');
@@ -35,15 +37,12 @@ app.use(express.urlencoded({ extended: false }));
 // urlencoded은 url 처럼 데이터를 변환하면localhost:4000/posts?title=title&content=content 해당 데이터를 json 형태 { “title”: “title, “content”: “content” } 라고 전달 합니다.
 // extended: false 를 기본으로 기억하기
 // bodyParser 세팅 부분은 하단의 app.use('/users', userRouter); 이거보다 위에 있어야함
-app.use(cookieParser());
+app.use(cookieParser('subin'));
 app.use(
   session({
     secret: 'subin',
     resave: false,
     saveUninitialized: true,
-    cookie: {
-      maxAge: 1000 * 60 * 60,
-    },
   }),
 );
 
@@ -65,7 +64,7 @@ app.use('/cookie', cookieRouter);
 app.use('/register', registerRouter);
 app.use('/login', loginRouter);
 app.use((err, req, res, next) => {
-  // err 를 받는 미들웨어를 작성할때는 반드시 매개변수 4개 작성
+  // err 를 받는 미들웨어를 작성할때는 반드시 매개변수 4개 작성 next 안쓴다고 지우면 err 못받음
   console.log(err.stack);
   // 개발자가 확인하기 위해서
   res.status(err.statusCode);
