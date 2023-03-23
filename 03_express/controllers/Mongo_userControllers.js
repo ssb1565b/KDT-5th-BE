@@ -1,5 +1,4 @@
-const User = require('../models/user');
-require('./mongooseConnect');
+const mongoClient = require('./mongoConnect');
 
 const UNEXPECTED_MSG =
   '알 수 없는 문제 발생<br><a href="/register">회원가입으로 이동</a>';
@@ -17,13 +16,14 @@ const LOGIN_WRONG_PASSWORD_MSG =
 const registerUser = async (req, res) => {
   // req, res는 전역객체
   try {
-    // mongoose는 이미 db에 접속해줌
+    const client = await mongoClient.connect();
+    const user = client.db('kdt5').collection('user');
+    // 얘는 시간 오래걸리는 작업이 아님
 
-    // mongoose의 스키마가 중복처리도 해줌
-    // const duplicatedUser = await User.findOne({ id: req.body.id });
-    // if (duplicatedUser) return res.status(400).send(DUPLICATED_MSG);
+    const duplicatedUser = await user.findOne({ id: req.body.id });
+    if (duplicatedUser) return res.status(400).send(DUPLICATED_MSG);
 
-    await User.create(req.body);
+    await user.insertOne(req.body);
     res.status(200).send(SUCCESS_MSG);
   } catch (err) {
     console.error(err);
@@ -33,7 +33,10 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const duplicatedUser = await User.findOne({ id: req.body.id });
+    const client = await mongoClient.connect();
+    const user = client.db('kdt5').collection('user');
+
+    const duplicatedUser = await user.findOne({ id: req.body.id });
     if (!duplicatedUser) return res.status(400).send(LOGIN_WRONG_MSG);
 
     if (duplicatedUser.password !== req.body.password)
@@ -44,7 +47,7 @@ const loginUser = async (req, res) => {
 
     //로그인 쿠키발행
     res.cookie('user', req.body.id, {
-      maxAge: 1000 * 60,
+      maxAge: 1000 * 20,
       httpOnly: true,
       signed: true,
     });

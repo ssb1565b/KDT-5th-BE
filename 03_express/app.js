@@ -29,8 +29,9 @@ const loginRouter = require('./routes/login');
 
 // 서버 세팅단계
 app.set('view engine', 'ejs');
-app.use(express.static('public'));
-// 프론트에서 특정 주소요청이 들어오면 public 폴더에서 찾아라
+app.use(express.static('public')); // 프론트에서 특정 주소요청이 들어오면 public 폴더에서 찾아라
+app.use('/uploads', express.static('uploads'));
+
 app.use(express.json());
 // json형태로 데이터를 전달한다는 의미
 app.use(express.urlencoded({ extended: false }));

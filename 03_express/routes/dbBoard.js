@@ -8,8 +8,30 @@ const {
   deleteArticle,
 } = require('../controllers/boardController');
 
+const multer = require('multer');
+const fs = require('fs');
+
 const router = express.Router();
 
+// 파일 업로드 설정
+const dir = './uploads'; // node.js가 하는것이므로 상대경로로 작성해줘야함
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + '_' + Date.now());
+  },
+});
+const limits = {
+  fileSize: 1024 * 1024 * 2,
+};
+
+const upload = multer({ storage, limits });
+
+if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
+// 특정폴더가 존재하는지 확인하는것
 //로그인 확인용 미들웨어
 function isLogin(req, res, next) {
   console.log(req.session.isLogin, '/', req.signedCookies.user);
@@ -38,13 +60,13 @@ router.get('/write', (req, res) => {
 });
 
 // 글 쓰기
-router.post('/write', isLogin, writeArticle);
+router.post('/write', isLogin, upload.single('img'), writeArticle);
 
 // 글 수정 모드로 이동
 router.get('/modify/:id', isLogin, getArticle);
 
 // 글 수정하기
-router.post('/modify/:id', isLogin, modifyArticle);
+router.post('/modify/:id', isLogin, upload.single('img'), modifyArticle);
 
 // 글 삭제하기
 router.delete('/delete/:id', isLogin, deleteArticle);

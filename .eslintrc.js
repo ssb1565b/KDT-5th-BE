@@ -16,5 +16,5 @@ module.exports = {
   env: {
     es6: true,
   },
-  treatUndefinedAsUnspecified: true,
+  // treatUndefinedAsUnspecified: true,
 };
